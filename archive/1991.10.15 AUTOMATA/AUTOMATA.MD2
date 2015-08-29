@@ -1,0 +1,306 @@
+MODULE Automata;
+
+(* Copyright (C) 1991, Derek Graham Lane
+   All rights reserved.
+
+   ABSTRACT:
+   Scalable state one-dimensional cellular automaton simulator,
+   including simple editing and saver/restore functions.
+ *)
+
+(*$Z+*)
+
+IMPORT Graph, Graphics, IO, Lib, FIO;
+
+CONST
+    Size  =  640;
+
+    Circular = FALSE;
+
+    NumStates = 16;
+
+TYPE
+    States  =  [ 0..NumStates ];
+    Sum  =  [ 0..NumStates*3 ];
+
+    Cell  =  States;
+
+    Rule  =  ARRAY Sum OF States;
+
+    Automaton  =  RECORD
+        Cells : ARRAY [ 0..Size ] OF Cell;
+        Rules : Rule;
+    END (* RECORD *);
+
+
+PROCEDURE Message( Str  :  ARRAY OF CHAR );
+BEGIN
+    Graphics.SetFunc( Graphics.clr, 0 );
+    Graphics.GotoXY( 0, 0 );
+    IO.WrStr( Str );
+END Message;
+
+VAR
+    Times2  :  BOOLEAN;
+
+PROCEDURE ShowYourself( Bob : Automaton;
+                        AtLine : CARDINAL );
+VAR
+    Count  :  CARDINAL;
+BEGIN
+    Graphics.SetFunc( Graphics.clr, 0 );
+    Graphics.SetPlane( {0,1,2,3} );
+    Graph.HLine( 0, AtLine, 639, 0 );
+    FOR Count := 0 TO Size DO
+        IF ~Times2 THEN
+            Graph.Plot( Count, AtLine, Bob.Cells[ Count ]+4 );
+        ELSE
+            Graph.Plot( Count, AtLine, Bob.Cells[ Count DIV 2 ]+4 );
+            Graph.Plot( Count, AtLine+1, Bob.Cells[ Count DIV 2 ]+4 );
+        END (* IF *);
+    END (* FOR *);
+END ShowYourself;
+
+
+VAR
+    SE, TE, PopN  :  CARDINAL;  (* Spatial and Temporal Entropy Measures *)
+
+PROCEDURE HaveaKid( Bob : Automaton;
+                    VAR BobJr : Automaton );
+VAR
+    Count  :  CARDINAL;
+    S  :  Sum;
+BEGIN
+    BobJr.Rules := Bob.Rules;
+    FOR Count := Size-1 TO 1 BY -1 DO
+        IF Bob.Cells[ Count-1 ]=Bob.Cells[ Count ] THEN
+            INC( SE );
+        END (* IF *);
+        S := Bob.Cells[ Count-1 ]+Bob.Cells[ Count ]+Bob.Cells[ Count+1 ];
+        BobJr.Cells[ Count ] := Bob.Rules[ S ];
+        IF BobJr.Cells[ Count ]=Bob.Cells[ Count ] THEN
+            INC( TE );
+        END (* IF *);
+        INC( PopN );
+        IF PopN=MAX( CARDINAL ) THEN
+            PopN := PopN DIV 2;
+            SE := SE DIV 2;
+            TE := TE DIV 2;
+        END (* IF *);
+    END (* FOR *);
+    S := Bob.Cells[ 0 ]+Bob.Cells[ 1 ]+Bob.Cells[ Size ];
+    BobJr.Cells[ 0 ] := Bob.Rules[ S ];
+    S := Bob.Cells[ Size ]+Bob.Cells[ Size-1 ]+Bob.Cells[ 0 ];
+    BobJr.Cells[ Size ] := Bob.Rules[ S ];
+
+END HaveaKid;
+
+
+VAR
+    RuleFileName : ARRAY [ 0..12 ] OF CHAR;
+
+PROCEDURE SaveRule( Bob : Automaton );
+VAR
+    RuleFile  :  FIO.File;
+    RuleStr   :  ARRAY [ 0..NumStates*3 ] OF CHAR;
+    Count     :  CARDINAL;
+BEGIN
+    RuleFile := FIO.Append( RuleFileName );
+    IF RuleFile = MAX( CARDINAL ) THEN
+        RuleFile := FIO.Create( RuleFileName );
+    ELSE
+        FIO.WrLn( RuleFile );
+    END (* IF *);
+    FOR Count := 0 TO NumStates*3 DO
+        IF Bob.Rules[ Count ] <= 9 THEN
+            RuleStr[ Count ] := CHAR( Bob.Rules[ Count ]+48 );
+        ELSE
+            RuleStr[ Count ] := CHAR( Bob.Rules[ Count ]+55 );
+        END (* IF *);
+    END (* FOR *);
+    FIO.WrStr( RuleFile, RuleStr );
+ (*   FIO.WrLn( RuleFile ); *)
+    FIO.Close( RuleFile );
+END SaveRule;
+
+
+PROCEDURE WriteRule( Bob : Automaton );
+VAR
+    RuleStr   :  ARRAY [ 0..NumStates*3 ] OF CHAR;
+    Count     :  CARDINAL;
+BEGIN
+    FOR Count := 0 TO NumStates*3 DO
+        IF Bob.Rules[ Count ] <= 9 THEN
+            RuleStr[ Count ] := CHAR( Bob.Rules[ Count ]+48 );
+        ELSE
+            RuleStr[ Count ] := CHAR( Bob.Rules[ Count ]+55 );
+        END (* IF *);
+    END (* FOR *);
+    Message( RuleStr );
+END WriteRule;
+
+PROCEDURE ReadRandomRule( VAR Bob : Automaton );
+VAR
+    RuleFile  :  FIO.File;
+    RuleStr   :  ARRAY [ 0..NumStates*3 ] OF CHAR;
+    Count     :  CARDINAL;
+BEGIN
+    Message( 'READING RULE...' );
+    RuleFile := FIO.Open( RuleFileName );
+    IF RuleFile # MAX( CARDINAL ) THEN
+        REPEAT
+            FIO.Seek( RuleFile, LONGCARD( Lib.RANDOM( CARDINAL( FIO.Size( RuleFile ) ) ) ) );
+            FIO.RdStr( RuleFile, RuleStr );
+        UNTIL ~ FIO.EOF;
+        FIO.RdStr( RuleFile, RuleStr );
+        FIO.Close( RuleFile );
+        FOR Count := 0 TO NumStates*3 DO
+            IF RuleStr[ Count ] <= '9' THEN
+                Bob.Rules[ Count ] := ORD( RuleStr[ Count ] )-48;
+            ELSE
+                Bob.Rules[ Count ] := ORD( RuleStr[ Count ] )-55;
+            END (* IF *);
+        END (* FOR *);
+    ELSE
+        FOR Count := 0 TO Lib.RANDOM( NumStates*3-1 ) DO
+            Bob.Rules[ Lib.RANDOM( 16 ) MOD (NumStates*3-1) ] :=
+                Lib.RANDOM( 16 ) MOD (NumStates+1);
+        END (* FOR *);
+    END (* IF *);
+    WriteRule( Bob );
+END ReadRandomRule;
+
+
+VAR
+    Ned  :  Automaton;
+    Key  :  CHAR;
+    Count, Count2  :  CARDINAL;
+    RuleStr  :  ARRAY [ 0..NumStates*3 ] OF CHAR;
+    NP  :  Graphics.PaletteType;
+    OldRule, OldVal, OldCount : CARDINAL;
+    OldSE, OldTE, OldPN  :  CARDINAL;
+
+CONST
+(*    NedRule = Rule( 0, 1,0,3, 2,2,0, 2,3,2 ); *)
+
+BEGIN
+
+    FIO.IOcheck := FALSE;
+    Times2 := FALSE;
+    IO.WrStr( 'NAME: ' );
+    IO.RdStr( RuleFileName );
+    PopN := 0;
+    SE := 0;
+    TE := 0;
+    OldRule := MAX( CARDINAL );
+
+    IF RuleStr[ 0 ] = 000C THEN
+        FOR Count := 0 TO Lib.RANDOM( NumStates*3-1 ) DO
+            Ned.Rules[ Lib.RANDOM( 16 ) MOD (NumStates*3-1) ] :=
+                Lib.RANDOM( 16 ) MOD (NumStates+1);
+        END (* FOR *);
+    ELSE
+        ReadRandomRule( Ned );
+    END (* IF *);
+
+(*  Graphics.SetFunc( Graphics.clr, 0 ); *)
+    Graph.InitEGA;
+    Graph.GraphMode;
+    Graphics.SetFont( 14 );
+(*    Graphics.SetPalette( Graphics.PaletteType( 1,50,36,54,9,9,9,9,
+        63,63,63,63,63,63,63,63 ) );                                *)
+
+    Lib.RANDOMIZE;
+(*    FOR Count := 0 TO Lib.RANDOM( 100 ) DO
+        Ned.Cells[ Lib.RANDOM( Size )-1 ] := Lib.RANDOM( 16 ) MOD (NumStates+1);
+    END (* FOR *); *)
+    ReadRandomRule( Ned );
+    Ned.Cells[ Size DIV 2 ] := Lib.RANDOM( 16 ) MOD (NumStates+1);
+    LOOP
+        FOR Count := 14 TO 349 DO
+            ShowYourself( Ned, Count );
+            IF Times2 THEN
+                INC( Count );
+            END (* IF *);
+            SE := 0;
+            TE := 0;
+            HaveaKid( Ned, Ned );
+            Graphics.GotoXY( 60*8, 0 );
+            IO.WrLngCard( LONGCARD( SE )*1000 DIV 640, 6 );
+            IO.WrLngCard( LONGCARD( TE )*1000 DIV 640, 6 );
+            IF IO.KeyPressed() THEN
+                Key := IO.RdKey();
+                Lib.RANDOMIZE;
+                IF Key = 'c' THEN
+                    FOR Count2 := 0 TO Lib.RANDOM( 20 ) DO
+                        Ned.Cells[ Lib.RANDOM( Size )-1 ] := Lib.RANDOM( 16 ) MOD (NumStates+1);
+                    END (* FOR *);
+                ELSIF Key = 'r' THEN
+                    Ned.Rules[ Lib.RANDOM( 49 ) MOD (NumStates*3+1) ] := Lib.RANDOM( 16 ) MOD (NumStates+1);
+                    WriteRule( Ned );
+                ELSIF Key = 'b' THEN
+                    FOR Count2 := 0 TO Size DO
+                        Ned.Cells[ Count2 ] := 0;
+                    END (* FOR *);
+                ELSIF Key = 's' THEN
+                    SaveRule( Ned );
+                ELSIF Key = 'l' THEN
+                    ReadRandomRule( Ned );
+                ELSIF Key = '1' THEN
+                    FOR Count2 := 0 TO Size DO
+                        Ned.Cells[ Count2 ] := 0;
+                    END (* FOR *);
+                    Ned.Cells[ Size DIV 2 ] := Lib.RANDOM( 16 ) MOD (NumStates+1);
+                ELSIF Key = '2' THEN
+                    FOR Count2 := 0 TO Size DO
+                        Ned.Cells[ Count2 ] := 0;
+                    END (* FOR *);
+                    Count2 := Lib.RANDOM( 16 ) MOD (NumStates+1);
+                    Ned.Cells[ (Size DIV 4) + 20 ] := Count2;
+                    Ned.Cells[ (Size*3 DIV 4) + 20 ] := Count2;
+                ELSIF Key = 'x' THEN
+                    Times2 := ~Times2;
+                ELSIF Key = 'p' THEN
+                    FOR Count2 := 0 TO 15 DO
+                        NP[ Count2 ] := BYTE( Lib.RANDOM( 63 ) );
+                    END (* FOR *);
+                    Graphics.SetPalette( NP );
+                END (* IF *);
+            END (* IF *);
+            IF Lib.RANDOM( 100 ) < 10 THEN
+(*                FOR Count2 := 0 TO Lib.RANDOM( 2 ) DO *)
+                    Count2 := Lib.RANDOM( 11 )+5;
+                    NP[ Count2 ] := NP[ Count2 ]+BYTE( Lib.RANDOM( 3 ) ) - BYTE( 1 );
+(*                END (* FOR *); *)
+                Graphics.SetPalette( NP );
+            END (* IF *);
+            IF OldRule = MAX( CARDINAL ) THEN
+                OldRule := Lib.RANDOM( 49 ) MOD (NumStates*3+1);
+                OldVal := Ned.Rules[ OldRule ];
+                Ned.Rules[ OldRule ] := Lib.RANDOM( 16 ) MOD (NumStates+1);
+                WriteRule( Ned );
+                OldSE := SE;
+                OldTE := TE;
+                OldCount := 0;
+(*            ELSIF ( (SE*100 DIV PopN) > (OldSE*100 DIV PopN)+1)
+                OR ( (TE*100 DIV PopN) > (OldTE*100 DIV PopN)+1) THEN
+                OldRule := MAX( CARDINAL ); *)
+            ELSIF OldCount = 30 THEN
+                IF ( SE < OldSE ) OR ( TE < OldTE ) THEN
+                    Ned.Rules[ OldRule ] := OldVal;
+                END (* IF *);
+            ELSIF OldCount > 50 THEN
+                OldRule := MAX( CARDINAL );
+                IF ( LONGCARD( SE )*1000 DIV 640 > 280 ) &
+                    ( LONGCARD( SE )*1000 DIV 640 < 400 ) THEN
+                    SaveRule( Ned );
+                END (* IF *);
+            END (* IF *);
+            INC( OldCount );
+        END (* FOR *);
+    END (* LOOP *);
+
+    Key := IO.RdKey();
+
+END Automata.
+

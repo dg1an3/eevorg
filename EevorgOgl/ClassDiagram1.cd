@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="CEevorgView">
+    <Position X="0.75" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAQAAAAFAAAAACBBAgAAAkAAAAAAAAAgIAAAQAYA=</HashCode>
+      <FileName>EevorgView.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_renderer" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="CEevorgDoc">
+    <Position X="7.5" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAIAAAAACAAAgAAAACAgAAAAAAQAAAAIAAA=</HashCode>
+      <FileName>EevorgDoc.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Eevorg">
+    <Position X="10.75" Y="1" Width="3.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Typedef Name="Eevorg::GeneType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Eevorg.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Eevorg::GenerationType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Eevorg.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Eevorg::HistogramType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Eevorg.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Eevorg::ColorTableType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Eevorg.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>IYgQEACIAAQEgnRAAAgoABRSAQAIiAQABAIAUgABkAA=</HashCode>
+      <FileName>Eevorg.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="valimage&lt;PixelType&gt;">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Typedef Name="valimage&lt;PixelType&gt;::PixelArrayType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>valimage.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="valimage&lt;PixelType&gt;::vec" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>valimage.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAACACAAGAEABAAAAAAACAAAAACQgAAgAAAAA=</HashCode>
+      <FileName>valimage.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EevorgRenderer">
+    <Position X="4.25" Y="0.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Typedef Name="EevorgRenderer::vec" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>EevorgRenderer.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAEAAAAAAQgAAEEYAAEBQQEAAAACAAAAABAA=</HashCode>
+      <FileName>EevorgRenderer.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_pixelBuffer" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Tahoma" Size="9.75" />
+</ClassDiagram>

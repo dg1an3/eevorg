@@ -1,0 +1,169 @@
+//////////////////////////////////////////////////////////////////////////
+// Organism Class Hierarchy
+//
+//                        Organism
+//                           *
+//          ***********************************
+//          *                                 *
+//        Org1D                             Org2D
+//          *                                 *
+//     ***********          *************************************
+//     *         *          *        *        *        *        *
+//  CAOrg1D  TuringOrg   CAOrg2D  LifeOrg  JuliaOrg MiraOrg   IFSOrg
+//
+
+
+class Organism
+{   // abstract base class for all Organism classes
+    public:
+
+    Organism(int RandomCells = 1);    // default constructor
+    Organism(Organism& parent);    // copy constructor
+    virtual ~Organism();    // destructor
+
+    // cell array access
+    char getCell(int row, int col)
+    {   // returns value of cell [row, col]
+        return cells[row*size+col];
+    };  // getCell
+
+    void putCell(int row, int col, char value)
+    {   // sets cell [row, col] value
+        cells[row*size+col] = value;
+    };  // putCell
+
+    // organism size functions
+    int grow();    // expands square by 2 on all sides; returns new size
+    int checkBounds();    // checks for differences in two-layer boundary
+
+    // user-interface functions
+    void evolve();    // user-mediated evolution procedure
+
+    // pure virtual functions--need to be supplied by derived classes
+    virtual void plotAt(int X, int Y) = 0;    // display the organism at (X, Y)
+    virtual void nextGen() = 0;    // calculate the next generation
+    virtual Organism *spawnChild() = 0;    // create copy with one mutation
+    virtual float fitness() = 0;    // returns fitness (0.0 == not viable)
+
+    //protected:
+        char *cells;    // pointer to cell body
+        int size;    // size of cell body (always a square)
+        int age;
+
+    //private:
+        Organism *leftChild;    // left-hand offspring of organism
+        Organism *rightChild;    // right-hand offspring of organism
+};  // Organism
+
+
+class Org1D : public Organism
+{
+    public:
+
+    Org1D();    // default constructor
+    Org1D(Org1D& parent);    // copy constructor
+    virtual ~Org1D();    // destructor
+
+    // cell array access
+    char getCell(int at)
+    {   // returns value of cell [row, col]
+        return cells[0][at];
+    };  // getCell
+
+    void putCell(int at, char value)
+    {   // sets cell [row, col] value
+        cells[0][at] = value;
+    };  // putCell
+
+    // organism size functions
+    int grow();    // expands square by 2; returns new size
+    int checkBounds();    // checks for differences in two-layer boundary
+
+    void plotAt(int X, int Y);    // plots generations at X, Y
+    float fitness();    // returns the fitness of the organism
+
+    //private:
+        int age;
+        char **cells;    // pointer to cell bodies
+        int *size;    // array of sizes
+        float temporalEntropy;    // stores organisms average TE
+        float spatialEntropy;    // stores organisms average SE
+};  // Org1D
+
+
+class CAOrg1D : public Org1D
+{   // one-dimensional cellular automaton organism
+    public:
+
+    CAOrg1D();    // default constructor
+    CAOrg1D(CAOrg1D& parent);    // copy constructor
+    ~CAOrg1D();    // destructor
+
+    int grow();    // overridden grow member function
+    void nextGen();    // calculates next generation
+    Organism *spawnChild();    // creates child with one mutation to rules
+    float fitness();    // returns the fitness of the organism
+
+    //private:
+        int numOfRules;    // number of rules defined
+        char *rules;    // points to rules
+        int currentRow;    // row of cell body that is current generation
+        float temporalEntropy;    // stores organisms average TE
+        float spatialEntropy;    // stores organisms average SE
+};  // CAOrg1D
+
+
+class Org2D : public Organism
+{   // abstract base class for all two-dimensional organisms
+    public:
+
+    Org2D();    // default constructor
+    ~Org2D();    // destructor
+
+    void plotAt(int X, int Y);    // displays organism cell body
+
+    protected:
+        int age;
+        char **cells;    // pointer to cell body
+        int *size;    // array of sizes
+};  // Org2D
+
+
+class CAOrg2D : public Org2D
+{   // two dimensional cellular automaton organism
+    public:
+
+    CAOrg2D();    // default constructor
+    CAOrg2D(CAOrg2D& parent);    // copy constructor
+    ~CAOrg2D();    // destructor
+
+    void nextGen();    // calculates next generation
+    Organism *spawnChild();    // creates child with one mutation to rules
+    float fitness();    // returns the fitness of the organism
+
+    //private:
+        int numOfRules;    // number of rules defined
+        char *rules;    // pointer to rules
+        float temporalEntropy;    // stores organisms average TE
+        float spatialEntropy;    // stores organisms average SE
+};  // CAOrg2D
+
+
+class LifeOrg : public Org2D
+{   // organism of Conway's Game of Life
+    public:
+
+    LifeOrg();    // default constructor
+    LifeOrg(LifeOrg& parent);    // copy constructor
+
+    void nextGen();    // calculates next generation
+    Organism *spawnChild();    // creates child with one mutation in rules
+    float fitness();    // returns the fitness of the organism
+
+    //private:
+        int minRule;    // minimum neighbors for cell to stay alive
+        int maxRule;    // maximum neighbors for cell to stay alive
+        int birthRule;    // number of neighbors for cell to be born
+        float temporalEntropy;    // stores organisms average TE
+        float spatialEntropy;    // stores organisms average SE
+};  // LifeOrg

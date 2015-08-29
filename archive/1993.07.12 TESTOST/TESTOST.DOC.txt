@@ -1,0 +1,257 @@
+06-23-93
+The Organism class hierarchy was originally designed to gain experience
+designing class hierarchies and also as a translation of an earlier
+Modula-2 program, AUTOMATA.  The design goals of the Organism class hierarchy
+are:
+
+    1) Provide an extensible class hierarchy for exploring systems with
+       complex parameterizations.
+    2) Define a system both genotypically and phenotypically, and use the
+       correlations between the two to guide an evolutionary type of mechanism
+    3) Allow user input into the evolutionary feedback loop, so as the user
+       makes selections, those parameters are increasingly favored.
+
+Most of the code for the initial version of Organism is derived from AUTOMATA.
+
+The Organism class serves as the abstract base class for the hierarchy.  Its
+functions include managing the square cell body, managing the family tree, and
+iterating through the evolutionary user-feedback loop.
+
+The Organism class has a constructor that accepts zero or one argument.  The
+argument is an indicator of how many cells to randomly assign values to.  It
+has a default of one, which automatically fills the center cell with a defined
+value.
+
+The adjustSize() member function automatically determines if a two-layer
+buffer zone exists around the outside edge of the cell body.  If the two-layer
+buffer zone does not exist, the cell body is expanded.  If more than two
+layers are present, the cell body is contracted.
+
+The evolve() member function performs the actual evolutionary loop.  It works
+by calling some of the virtual member functions, which derived classes need to
+override when deriving from Organism.  The basic outline for how evolve()
+works is this:  a parent organism's evolve() is called.  evolve() constructs a
+left and right child from the parent by using the copy constructor to copy the
+parent and then introducing a unit mutation (a mutation of a single step at a
+single) in the parent's genome via the mutate() virtual function.  The parent
+is then displayed at the bottom of the screen, with the children up to the left
+and right.
+
+Now, the main evolve() loop is entered.  Each time through, another generation
+of the parent and children is calculated and displayed by calling the
+nextGen() and plotAt() overridden functions.  While this is happening, a third
+child (local newChild) is created and grown.  After newChild->nextGen(), the
+fitness() measure of the new child is compared to the fitness() measure of the
+right and left child.  If the new child's fitness exceeds either the right or
+left child's, then the new child replaces the existing child.
+
+As this is occuring, the user may press 'A', 'L', or <space>.  If the user
+presses 'A', the left child's evolve() function is called.  If the user
+presses 'L', the right child's evolve() function is called.  If the <space>
+bar is pressed, the parents evolve() function returns to whatever called it.
+In this way, the tree structure can be traversed by using A or L to move up
+the tree and <space> to move back down toward the root.
+
+A mentioned above, four virtual functions are defined for the Organism class.
+plotAt() draws the organism at the indicated point.  nextGen() calculates the
+next generation for the organism.  mutate() introduces a unit mutation.
+Finally, fitness() returns a real value corresponding to the fitness of the
+organism, where 0.0 means a completely unfit organism and 1.0 means a
+completely fit organism.  All four of these functions are declared pure
+virtual, making the Organism class uninstantiable.
+
+The Organism base class defines several member variables.  The leftChild and
+rightChild member variables are responsible for maintaining the shape of the
+family tree.  The cells pointer points to the array of cells that make up the
+cell body.  The size member variable stores that size of one side of the cell
+body (which must always be a square).  The prevSize array stores the last ten
+sizes over the last ten generations.  Finally, the age member variable stores
+the number of generations since the last mutate() function call.
+
+At this point, the Organism class hierarchy is defined so that four derived
+classes come from it.  The CAOrg1D class implements a one-dimensional cellular
+automaton generator.  The Org2D class is a derived class that serves as the
+base class for two other classes.  It provides functions for displaying the
+square array of the cell body.  The two classes derived from the Org2D base
+class or CAOrg2D, which implements a two-dimensional cellular automaton, and
+LifeOrg, which implements John Conway's Game of Life.
+
+CAOrg1D defines a default constructor (no arguments), a copy constructor, and
+a virtual destructor.  Then, the four virtual functions are defined.  The
+plotAt() member function displays a series of one-dimensional generations as a
+two-dimensional square array.  The nextGen() member function calculates the
+cell body for the next generation, and updates the temporalEntropy and
+spatialEntropy member variables (described below).
+
+The mutate() member function introduces a unit mutation in the automaton's
+genome.  The automaton's genome is defined as the rule table.  The unit
+mutation means that one particular rule in the rule table is selected and then
+either incremented or decremented.  If the rule is incremented and the new
+state value is greater than any other state value in the rule table, then the
+rule table's length is expanded.
+
+The fitness() member function returns a real value in the range 0.0 to 1.0.
+It is calculated by making use of the temporalEntropy and spatialEntropy
+values.  According to the definition of these values, the most interesting
+rules will produce organisms with a temporalEntropy and spatialEntropy that
+tends toward 0.5.  So, to calculate a fitness that approaches 1.0 as the
+temporalEntropy and spatialEntropy approaches 0.5 from either side, the
+following formula is used:
+
+    fitness = temporalEntropy*(1-temporalEntropy)*4*
+        spatialEntropy*(1-spatialEntropy)*4
+
+This is the value returned by the fitness() member function.
+
+There are five member variables for the CAOrg1D class.  The first is called
+numOfRules, and defines the number of rules stored in the rule base.  The
+second is called rules, and it points to a character array of size numOfRules.
+
+The third member variable for the CAOrg1D class is currentRow.  This variables
+is what ties the square array managed by Organism to the linear arrangement of
+a one-dimensional cellular automaton.  The currentRow is set to point at the
+row that will receive the next generations of cells.  In this way, the square
+cell body of Organism can be used as a series of one-dimensional generations.
+
+There are several problems to resolve with doing this, however.  The
+adjustSize() member function is a big one.  When the adjustSize() is called,
+the function needs to know what the currentRow is in order to properly insert
+the two additional rows.  However, currentRow is not available within the
+Organism object.  This may be solved by overriding adjustSize() for the
+CAOrg1D class.
+
+The last two member variables of CAOrg1D is temporalEntropy and
+spatialEntropy.  Both of these are values between 0 and 1, where 0 means no
+entropy (difference in cell states) and 1 means maximum entropy.  The
+spatialEntropy is measured as the average difference between a cell's value
+and its neighbor's value.  The temporalEntropy is measured as the average
+difference between a cell's value and its immediate predecessor's value.
+
+The most interesting rules yield cell bodies that have spatial and temporal
+entropies that tend toward 0.5.  Actually, the most interesting rules I have
+seen seem to have average temporalEntropy values around 0.35.  For now, the
+fitness() measure attempts to search out systems with both spatial and
+temporal entropy tending towards 0.5.
+
+Three other classes have been declared as derivatives of Organism.  Org2D is a
+base class for two-dimensional organisms that provides cell body plotting
+functions.  Derived from Org2D is CAOrg2D, a two-dimensional cellular
+automaton that uses its rule table as a genome, and LifeOrg, a Game of
+Life-type organism that uses variations in the starvation rule, overcrowding
+rule, and birth rule as its genome.  The implementation of these classes has
+not yet been completed.
+
+06-26-93
+I have decided to move the cell body maintenance functions out of Organism.
+The Org2D derived class will receive the two-dimensional cell body management
+functions already in Organism.  A new class called Org1D has been created that
+will handle one-dimensional cell bodies.  Org1D is derived from Organism, and
+CAOrg1D is derived from Org1D.  Org1D and Org2D also contain the temporal and
+spatial entropy member variables, as well as the fitness() and plotAt()
+functions.  These classes also encapsulate the cell body growing functions
+that are ensure a buffer is maintained around the cells.
+
+07-06-93
+Changed the numOfRules member variable in CAOrg1D to maxState, a member
+variable of Org1D.  The value stored now holds the maximum cell value in the
+cell body.  This value is used to plot the cell generations.
+
+Having problems with the stack.  May need to do some stack shifting to move
+stuff out of the stack and on to the heap.  The problem seems to be occurring
+when the free_memory garbage collection function is being called.
+
+I built the class library using the large memory model instead of medium.
+This means that the heap allocations will occur on the far heap instead of the
+near heap.  This may help the stack problems.
+
+Also, I put checks on the recursive evolve() calls, so that if not enough
+stack space remains, the recursive call is not made.
+
+07-12-93
+Have designed a new plotAt() member function for Org1D that maps the cell body
+on to an ellipse.  The mapping is parabolic from top to bottom, so the bottom
+rows are much taller than the top since the bottom rows are the newest
+generations.  Have considered making the mapping hyperbolic from left to
+right, but haven't done it yet.
+
+Started thinking about expansion of the phenotypic statistics.  At this point,
+only temporal and spatial entropy are being selected for.  Here are some
+possible inclusions in the phenotypic statistics:
+
+    1) size - select to maximize a size of ~100 cells
+    2) delta size - select correlated with size, so that small cell bodies
+       with positive delta size are selected and large cell bodies with
+       negative delta size are selected.
+    3) periodicity - measured as periods of the cell values, or as periods of
+       the other statistics? probably easier at first to measure periods of
+       the other statistics.  Select for longer periods, against very short
+       periods (boring repeaters).
+    4) first order cell value frequency table - stores number of cells with
+       cell value of 0, number with cell value of 1, etc.  Table of int.
+       Number of entries in table is maxState.
+    5) spatial second order frequency table - stores frequency of a cell with
+       a value of 0 next to a cell with a value of 1, etc.  Table of char.
+       Number of entries in table is maxState^2.
+    6) temporal second order frequency table - stores frequency of a cell with
+       a value of 0 descending from a cell with a value of 1, etc.  Table of
+       char.  Number of entries in table is maxState^2.
+
+The last two second-order frequency tables will have complex selection
+criteria.  First, the correlation between these frequency tables within a cell
+body will need to be measured.  If a definite statistical correlation exists
+for these frequency tables, the rules should be selected for.  One thing that
+might be noticed is that stable arrangements, both periodic and choatic,
+should have cumulative statistics that settle onto definite values.
+
+As these statistics are developed, the correlations between the genotype and
+the phenotype can begin to be made.  These correlations should be searched for
+in terms of how much a mutation in the genome causes the phenotypic statistics
+to change from their values taken over the population of one organism's cells.
+
+With these correlation measurements being taken, a protection mask can be
+created.  The protection mask is a value that indicates how likely a mutation
+will occur.  For this reason, the size of the protection mask will be the
+number of possible mutations over a particular genome.  If it is measured that
+one particular mutation causes a large change in the phenotypic statistics,
+then that mutation should have more protection.
+
+However, this scheme would seem to favor silent mutations, wasting processor
+time pursuing mutations that hardly change the phenotype at all.  The
+protection mask should more accurately be stated as this:
+
+    For a mutation m over a genotype Og, the protection mask value p(m) is
+    given as:
+                              Op - Op~m
+                       p(m) = ---------
+                               delta m
+
+Thus, the selection procedure should select for mutations that cause neither
+large mutations nor silent mutations.
+
+At this point, the user's role in the selection process can begin to be
+defined.  The user interacts with the program by pointing at an organism with
+the mouse.  The more that the mouse has moved up to the time of the pointing
+reflects how much selection the organism gets.  Also, the user may click to
+make instantaneous selections.  These will have even higher selection, though
+mouse clicks may be used for more specific purposes later.
+
+The user's selections are then correlated with the phenotypic statistics.  Any
+place that a particular statistical pattern is found, that statistical pattern
+will be selected for.
+
+So, the order of events at this point is:
+    1) Finish the elliptical mapping procedure
+    2) Implement a mouse cursor for guiding the selection zoom
+    3) Implement a mouse-click handling procedure for deciding on
+       click-selections
+    4) Implement the code to store these selections for each organism
+    5) Implement the code to output the statistics and user selections in text
+       form
+    6) Implement variable children for the Organism class
+    9) Implement code to eliminate duplicate children (spawnChild())
+    7) Implement variable cell bodies for the Org1D class
+    8) Implement a message-network garbage collector
+    9) Implement size and delta size statistical measurements
+    10) Implement first-order cell value tables
+    11) Implement second-order statistics (?)
+    12) Implement periodicity measurements
