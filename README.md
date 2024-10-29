@@ -47,6 +47,6 @@ NFTs on Tezos can ocaml raffle.
 
 The tezos ligo tutorial compares to fsharp programming.
 
-xmrig monero mining can earn what.
+xmrig monero mining is a fun experiment (thanks net chuck)
 
 **********
