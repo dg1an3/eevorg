@@ -82,12 +82,12 @@ void CEevorgView::OnPaint()
 
 	CString strInfo;
 	strInfo.Format(_T("States: %i"), currentEevorg()->maxState());
-	dcMem.TextOutW(10, 10, strInfo);
+	dcMem.TextOut(10, 10, strInfo);
 	strInfo.Format(_T("Color table: %4.1f, %4.1f, %4.1f"), 
 		currentEevorg()->hueSlope(),
 		currentEevorg()->hueOffset(),
 		currentEevorg()->saturationFrequency());
-	dcMem.TextOutW(10, 30, strInfo);
+	dcMem.TextOut(10, 30, strInfo);
 
 	// and blt
 	dc.BitBlt(0, 0, rectClient.Width(), rectClient.Height(), &dcMem, 0, 0, SRCCOPY);
