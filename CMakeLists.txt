@@ -4,5 +4,3 @@ project(eevorg)
 
 # Add sub directories
 add_subdirectory(EevorgOgl)
-add_subdirectory(MFCApplication1)
-add_subdirectory(CMakeTest)
