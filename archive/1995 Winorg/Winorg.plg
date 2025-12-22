@@ -1,0 +1,51 @@
+--------------------Configuration: Winorg - Win32 Debug--------------------
+Begining build with project "C:\Users\Lane Consulting\Archive\Pattern Generators\Winorg\1\Winorg.dsp", at root.
+Active configuration is Win32 (x86) Application (based on Win32 (x86) Application)
+
+Project's tools are:
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FR"Debug/" /Fp"Debug/Winorg.pch" /Yu"STDAFX.H" /Fo"Debug/" /Fd"Debug/" /FD /c "
+			"OLE Type Library Maker" with flags "/nologo /D "_DEBUG" /mktyplib203 /o NUL /win32 "
+			"Win32 Resource Compiler" with flags "/l 0x409 /fo"Debug/Winorg.res" /d "_DEBUG" "
+			"Browser Database Maker" with flags "/nologo /o"Debug/Winorg.bsc" "
+			"COFF Linker for 80x86" with flags "oldnames.lib /nologo /stack:0x2800 /subsystem:windows /incremental:yes /pdb:"Debug/Winorg.pdb" /debug /machine:IX86 /def:".\Winorg.def" /out:"Debug/Winorg.exe" /pdbtype:sept "
+			"Custom Build" with flags ""
+			"<Component 0xa>" with flags ""
+
+Creating command line "rc.exe /l 0x409 /fo"Debug/Winorg.res" /d "_DEBUG" "C:\Users\Lane Consulting\Archive\Pattern Generators\Winorg\1\Winorg.rc"" 
+Creating temp file "C:\WINDOWS\TEMP\RSP2330.TMP" with contents </nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FR"Debug/" /Fp"Debug/Winorg.pch" /Yu"STDAFX.H" /Fo"Debug/" /Fd"Debug/" /FD /c 
+"C:\Users\Lane Consulting\Archive\Pattern Generators\Winorg\1\Winorg.cpp"
+"C:\Users\Lane Consulting\Archive\Pattern Generators\Winorg\1\Mainfrm.cpp"
+"C:\Users\Lane Consulting\Archive\Pattern Generators\Winorg\1\Eevorg.cpp"
+"C:\Users\Lane Consulting\Archive\Pattern Generators\Winorg\1\Winorvw.cpp"
+>
+Creating command line "cl.exe @C:\WINDOWS\TEMP\RSP2330.TMP" 
+Creating temp file "C:\WINDOWS\TEMP\RSP2331.TMP" with contents </nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FR"Debug/" /Fp"Debug/Winorg.pch" /Yc"STDAFX.H" /Fo"Debug/" /Fd"Debug/" /FD /c 
+"C:\Users\Lane Consulting\Archive\Pattern Generators\Winorg\1\Stdafx.cpp"
+>
+Creating command line "cl.exe @C:\WINDOWS\TEMP\RSP2331.TMP" 
+Creating temp file "C:\WINDOWS\TEMP\RSP2332.TMP" with contents <oldnames.lib /nologo /stack:0x2800 /subsystem:windows /incremental:yes /pdb:"Debug/Winorg.pdb" /debug /machine:IX86 /def:".\Winorg.def" /out:"Debug/Winorg.exe" /pdbtype:sept 
+".\Debug\Winorg.res"
+".\Debug\Stdafx.obj"
+".\Debug\Winorg.obj"
+".\Debug\Mainfrm.obj"
+".\Debug\Eevorg.obj"
+".\Debug\Winorvw.obj">
+Creating command line "link.exe @C:\WINDOWS\TEMP\RSP2332.TMP" 
+Compiling resources...
+Compiling...
+Stdafx.cpp
+Compiling...
+Winorg.cpp
+Mainfrm.cpp
+Eevorg.cpp
+Winorvw.cpp
+Generating Code...
+Linking...
+.\Winorg.def : warning LNK4017: EXETYPE statement not supported for the target platform; ignored
+.\Winorg.def : warning LNK4017: CODE statement not supported for the target platform; ignored
+.\Winorg.def : warning LNK4017: DATA statement not supported for the target platform; ignored
+   Creating library Debug/Winorg.lib and object Debug/Winorg.exp
+
+
+
+Winorg.exe - 0 error(s), 3 warning(s)

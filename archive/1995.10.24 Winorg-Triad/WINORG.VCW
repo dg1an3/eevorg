@@ -1,0 +1,11 @@
+[MSVC Status File]
+Version=1.00
+ProjectType=10
+External=0
+BrkptCount=1
+BrkptType1=0
+BrkptActive1=0
+BrkptAmbig1=0
+BrkptIndex1=-1
+BrkptLoc1={,c:\eevorg\triad\triadvw.cpp,} .80
+WatchCount=0
