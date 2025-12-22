@@ -1,58 +1,66 @@
-An Eevorg is a funky presentation of a 1D cellular automaton, with color lookup tables derived the same way as the original FocalFusion pseudo-color lookup tables.  Eevorg "evolve" through a random mutation driven by user choices.
+# Eevorg
 
-To generate the build solution:
+An Eevorg is a funky presentation of a 1D cellular automaton, with color lookup tables derived the same way as the original FocalFusion pseudo-color lookup tables. Eevorg "evolve" through random mutation driven by user choices.
 
-```PS
+[Video demo](https://youtu.be/SQaSQhQwHgE)
+
+## Build
+
+This is an MFC + OpenGL Windows application. Requires Visual Studio with MFC components.
+
+```powershell
 mkdir build; cd build; cmake ..
+cmake --build .
 ```
 
-A [video](https://youtu.be/SQaSQhQwHgE) of an eevorg.
+Output: `EevorgOgl.exe`
 
-Generative Software
-——————————————————-
+## Project History
 
-TuringPas 1988 had a Text GUI table UI - machine table
+| Year | Project | Description |
+|------|---------|-------------|
+| 1988 | TuringPas | Text GUI with machine table |
+| 1991 | CA1D / AUTOMATA | First GUI for cellular automata |
+| 1992 | JuliaB | Fractal visualization GUI |
+| 1992 | EEVORG | First eevorg implementation (Borland C++) |
+| 1995 | Winorg | Windows MFC port |
+| 2007 | Eevorg.NET | .NET/CLR version |
+| 2011 | EevorgBulbApp | MFC + OpenGL with 3D bulb rendering (this repo) |
+| 2023 | eevorg2dsr | Python 2D CA with PyTorch + ESRGAN |
+| 2025 | EevorgApi | .NET 8 Aspire REST API |
+| 2025 | Winorg Python | Streamlit/Gradio web app reimplementation |
 
-TuringPas consider a generative model
+## Archive
 
-CA1D 1991 was GUI for gen model
+The `archive/` directory contains historical implementations:
+- `1991.10.15 AUTOMATA/` - Original cellular automata with DAT specimens
+- `1992.02.12 EEVORG/` - First eevorg (Borland C++)
+- `1992 FRACTAL/` - Julia set, Mandelbrot, dynamical systems
+- `1993.07.12 TESTOST/` - Experimental version
+- `1994-1997 Organism/` - Intermediate versions
+- `1995 Winorg/` - Windows MFC port
+- `2009.07 Eevorg.NET/` - .NET/CLR version with WinForms
 
-JuliaB 1992 was GUI for gen model
+## Related Projects
 
-The EevorgBulbApp 2011 is an MFC + GL application that depicts eevorg as 3D bulbs.
+| Repository | Description |
+|------------|-------------|
+| [eevorg2dsr](https://github.com/dg1an3/eevorg2dsr) | Python 2D cellular automata with PyTorch, VGG perceptual loss, Real-ESRGAN super-resolution |
+| [EevorgApi](https://github.com/dg1an3/EevorgApi) | .NET 8 Aspire REST API for eevorg generation and selection |
 
-The eevorg collab notebook has a tf generative model of rules.
+## ML & Generative Models
 
-The eevorg sr colab notebook can be primed from trials google sheet.
+- **ESRGAN**: Super-resolution models in ONNX format (pinned on Pinata)
+- **VAE**: AlexNet-based VAE trained on eevorg with 128 latent dimensions
+- **Perceptual Search**: Novel eevorg discovery by maximizing perceptual distance
+- **CycleGAN**: Style transfer experiments
 
-Novel eevorg can be found by searching for eevorg that maximizes perceptual distance to example eevorg.
+## 3D Printing
 
-The Eevorg + esrgan models in onnx format are pinned on Pinata.
+Eevorg can be 3D printed as bas relief with color. Support removal is challenging for complex specimens.
 
-Eevorg can be 3D printed as a bas relief, and with color.
+## Data
 
-It is difficult to 3d print removing support.
-
-I can design a Chain mail cap that can be 3d printed.
-
-There is an example pybullet to program hexapod.
-
-*********
-
-Cxr8Explorer pulls together - see below
-
-CycleGAN for style transfer VAE GAN / CinCGAN:  of CT slices vs VAE; reconstruction, anat0mixer, slice stack pathway.
-
-Eevorg ESRGan 2022 CycleGAN is a generative model.
-
-Different generative models VAE GAN CinCGAN.
-
-An AlexNet or zebrastack mk I or II VAE can be trained on eevorg with 128 latent dimensions.
-
-NFTs on Tezos can ocaml raffle.
-
-The tezos ligo tutorial compares to fsharp programming.
-
-xmrig monero mining can earn what.
-
-**********
+- 578 historical eevorg specimens (1991-present) in various DAT formats
+- Colab notebooks for TensorFlow generative models
+- Google Sheets integration for trials/experiments

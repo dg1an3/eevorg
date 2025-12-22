@@ -31,3 +31,7 @@ x64
 build
 .vs
 target
+.DS_Store
+
+# Staging folder for projects to be merged
+_staging/
